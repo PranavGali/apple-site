@@ -1,39 +1,53 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Apple Store</title>
-  <script src="https://unpkg.com/@supabase/supabase-js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f7; text-align: center; }
+    .product { display: inline-block; margin: 15px; padding: 15px; background: #fff; border-radius: 10px; width: 220px; box-shadow: 0 5px 15px rgba(0,0,0,.1); }
+    img { max-width: 100%; border-radius: 8px; }
+    h3 { margin: 10px 0 5px; }
+    p { color: #333; font-weight: bold; }
+  </style>
 </head>
 <body>
   <h1>Apple Store</h1>
-  <div id="products"></div>
+  <div id="products">Loading products...</div>
 
   <script>
-    const { createClient } = supabase;
-    const supabaseUrl = "https://tslzmeigtdzhmhanptpd.supabase.co"; // your project URL
-    const supabaseKey = "YOUR_ANON_KEY"; // your anon key from Supabase
-    const supabaseClient = createClient(supabaseUrl, supabaseKey);
+    const SUPABASE_URL = 'https://vitgqshdcylyttmrskcy.supabase.co'; // Your Supabase URL
+    const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZpdGdxc2hkY3lseXR0bXJza2N5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwNzY1MjksImV4cCI6MjA3MDY1MjUyOX0.DPvGZCRsI4Ca09WzpKYgoyse0aUNK9L6mMicDqdS4-o'; // Your anon key
+
+    const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
     async function loadProducts() {
-      const { data, error } = await supabaseClient
-        .from('products') // your table name
-        .select('*');
+      const { data, error } = await client
+        .from('product')
+        .select('id, name, price, "image-url"');
+
+      const container = document.getElementById('products');
 
       if (error) {
+        container.textContent = 'Error loading products.';
         console.error(error);
         return;
       }
 
-      const container = document.getElementById('products');
-      data.forEach(product => {
-        container.innerHTML += `
-          <div style="margin-bottom:20px;">
-            <img src="${product['image-url']}" width="200">
-            <h2>${product.name}</h2>
-            <p>₹${product.price}</p>
-          </div>
-        `;
-      });
+      if (!data || data.length === 0) {
+        container.textContent = 'No products found.';
+        return;
+      }
+
+      container.innerHTML = data.map(p => `
+        <div class="product">
+          <img src="${p['image-url']}" alt="${p.name}">
+          <h3>${p.name}</h3>
+          <p>₹ ${p.price}</p>
+        </div>
+      `).join('');
     }
 
     loadProducts();
