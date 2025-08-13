@@ -1,63 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Supabase Product List</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background: #f8f8f8;
-    }
-    .product {
-      display: inline-block;
-      background: white;
-      padding: 15px;
-      margin: 15px;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      width: 250px;
-    }
-    .product img {
-      max-width: 100%;
-      height: auto;
-      border-radius: 8px;
-    }
-    .product h3 {
-      margin: 10px 0 5px;
-    }
-    .product p {
-      color: #555;
-    }
-  </style>
+  <title>Apple Store</title>
+  <script src="https://unpkg.com/@supabase/supabase-js"></script>
 </head>
 <body>
-
   <h1>Apple Store</h1>
   <div id="products"></div>
 
-  <!-- Supabase JS Library -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // Your Supabase credentials
-    const SUPABASE_URL = "https://tslzmeigtdzhmhanptpd.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRzbHptZWlndGR6aG1oYW5wdHBkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ0MTA5NDgsImV4cCI6MjA2OTk4Njk0OH0.rSi6-Vu5Bfe7mdeh7LT5l8xKwoSNatbXIVoDKLSWPBw";
-
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const { createClient } = supabase;
+    const supabaseUrl = "https://tslzmeigtdzhmhanptpd.supabase.co"; // your project URL
+    const supabaseKey = "YOUR_ANON_KEY"; // your anon key from Supabase
+    const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
     async function loadProducts() {
-      let { data, error } = await supabase.from("products").select("*");
+      const { data, error } = await supabaseClient
+        .from('products') // your table name
+        .select('*');
+
       if (error) {
         console.error(error);
         return;
       }
-      const container = document.getElementById("products");
-      container.innerHTML = "";
+
+      const container = document.getElementById('products');
       data.forEach(product => {
         container.innerHTML += `
-          <div class="product">
-            <img src="${product.image_url}" alt="${product.name}">
-            <h3>${product.name}</h3>
+          <div style="margin-bottom:20px;">
+            <img src="${product['image-url']}" width="200">
+            <h2>${product.name}</h2>
             <p>₹${product.price}</p>
           </div>
         `;
@@ -66,6 +38,5 @@
 
     loadProducts();
   </script>
-
 </body>
 </html>
